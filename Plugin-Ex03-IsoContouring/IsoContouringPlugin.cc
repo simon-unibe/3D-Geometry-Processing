@@ -38,7 +38,7 @@ void IsoContouringPlugin::extractIsoContour(PolyhedralMeshObject &output, TriMes
         SVH v0 = eh.v0();
         SVH v1 = eh.v1();
 
-        if(false)
+        if((func[v0] - value) * (func[v1] - value) < 0.0)
             // TODO: test if we have to insert a vertex on this edge
             // You can access the per-vertex function values using func[v0]
         {
@@ -47,6 +47,10 @@ void IsoContouringPlugin::extractIsoContour(PolyhedralMeshObject &output, TriMes
             // you can access input vertex positions like this:
             // const Point &p0 = input.point(eh.v0());
             // const Point &p1 = input.point(eh.v1());
+
+            double t = (func[v0] - value) / (func[v0] - func[v1]);
+            std::cout << value << '\t' << func[v0] << '\t' << func[v1] << '\t' << t << '\n';
+            pos = (1.0 - t) * input.point(v0) + t * input.point(v1);
 
             out_vert[eh] = out_mesh.add_vertex(pos);
             // The faces incident to this edge contain iso-contour edge segments:
@@ -67,6 +71,16 @@ void IsoContouringPlugin::extractIsoContour(PolyhedralMeshObject &output, TriMes
         // You can use this snippet to generate an output edge:
         //     auto eh = out_mesh.add_edge(out_v0, out_v1);
         //     output.colors()[eh] = color;
+
+        const auto ehs = fh.edges().to_vector();
+        std::vector<OpenVolumeMesh::VH> vertices;
+
+        if (out_vert[ehs[0]].is_valid()) vertices.push_back(out_vert[ehs[0]]);
+        if (out_vert[ehs[1]].is_valid()) vertices.push_back(out_vert[ehs[1]]);
+        if (out_vert[ehs[2]].is_valid()) vertices.push_back(out_vert[ehs[2]]);
+
+        auto eh = out_mesh.add_edge(vertices[0], vertices[1]);
+        output.colors()[eh] = color;
     }
 }
 
