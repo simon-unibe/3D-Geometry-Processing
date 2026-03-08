@@ -1,0 +1,16 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/kyaru/Documents/OpenFlipper/OpenFlipper-Free/Package-GP/libs/eigen/test/product_large.cpp"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"BuildOfficial"
+		],
+		"name" : "product_large_1"
+	}
+}

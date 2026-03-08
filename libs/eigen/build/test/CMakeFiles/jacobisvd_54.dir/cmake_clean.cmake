@@ -1,0 +1,12 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/jacobisvd_54.dir/link.d"
+  "CMakeFiles/jacobisvd_54.dir/jacobisvd.cpp.o"
+  "CMakeFiles/jacobisvd_54.dir/jacobisvd.cpp.o.d"
+  "jacobisvd_54"
+  "jacobisvd_54.pdb"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/jacobisvd_54.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

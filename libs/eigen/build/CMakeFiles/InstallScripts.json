@@ -1,0 +1,25 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/kyaru/Documents/OpenFlipper/OpenFlipper-Free/Package-GP/libs/eigen/build/cmake_install.cmake",
+		"/home/kyaru/Documents/OpenFlipper/OpenFlipper-Free/Package-GP/libs/eigen/build/test/cmake_install.cmake",
+		"/home/kyaru/Documents/OpenFlipper/OpenFlipper-Free/Package-GP/libs/eigen/build/failtest/cmake_install.cmake",
+		"/home/kyaru/Documents/OpenFlipper/OpenFlipper-Free/Package-GP/libs/eigen/build/unsupported/cmake_install.cmake",
+		"/home/kyaru/Documents/OpenFlipper/OpenFlipper-Free/Package-GP/libs/eigen/build/unsupported/Eigen/cmake_install.cmake",
+		"/home/kyaru/Documents/OpenFlipper/OpenFlipper-Free/Package-GP/libs/eigen/build/unsupported/Eigen/CXX11/cmake_install.cmake",
+		"/home/kyaru/Documents/OpenFlipper/OpenFlipper-Free/Package-GP/libs/eigen/build/unsupported/doc/cmake_install.cmake",
+		"/home/kyaru/Documents/OpenFlipper/OpenFlipper-Free/Package-GP/libs/eigen/build/unsupported/doc/examples/cmake_install.cmake",
+		"/home/kyaru/Documents/OpenFlipper/OpenFlipper-Free/Package-GP/libs/eigen/build/unsupported/doc/snippets/cmake_install.cmake",
+		"/home/kyaru/Documents/OpenFlipper/OpenFlipper-Free/Package-GP/libs/eigen/build/unsupported/test/cmake_install.cmake",
+		"/home/kyaru/Documents/OpenFlipper/OpenFlipper-Free/Package-GP/libs/eigen/build/blas/cmake_install.cmake",
+		"/home/kyaru/Documents/OpenFlipper/OpenFlipper-Free/Package-GP/libs/eigen/build/blas/testing/cmake_install.cmake",
+		"/home/kyaru/Documents/OpenFlipper/OpenFlipper-Free/Package-GP/libs/eigen/build/lapack/cmake_install.cmake",
+		"/home/kyaru/Documents/OpenFlipper/OpenFlipper-Free/Package-GP/libs/eigen/build/doc/cmake_install.cmake",
+		"/home/kyaru/Documents/OpenFlipper/OpenFlipper-Free/Package-GP/libs/eigen/build/doc/examples/cmake_install.cmake",
+		"/home/kyaru/Documents/OpenFlipper/OpenFlipper-Free/Package-GP/libs/eigen/build/doc/special_examples/cmake_install.cmake",
+		"/home/kyaru/Documents/OpenFlipper/OpenFlipper-Free/Package-GP/libs/eigen/build/doc/snippets/cmake_install.cmake",
+		"/home/kyaru/Documents/OpenFlipper/OpenFlipper-Free/Package-GP/libs/eigen/build/demos/cmake_install.cmake",
+		"/home/kyaru/Documents/OpenFlipper/OpenFlipper-Free/Package-GP/libs/eigen/build/scripts/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
