@@ -95,19 +95,31 @@ public:
 static double compute_angle(TriMesh const& _mesh, HEH _heh)
 {
     auto heh = _mesh.make_smart(_heh);
-    // TODO: compute the angle of corner heh.to() in the face heh.face()
+    // TO-DO: compute the angle of corner heh.to() in the face heh.face()
     // Hint: use cross- and dot product to determine sin(alpha) and cos(alpha),
     // then use std::atan2 (Q: why not acos() or asin()?)
     // Although OpenMesh has built-in functionality to compute angles, do NOT use it.
-    return 1234;
+
+    auto v0 = -_mesh.calc_edge_vector(heh).normalized();
+    auto v1 = _mesh.calc_edge_vector(_mesh.next_halfedge_handle(heh)).normalized();
+
+    double sin = v0.cross(v1).norm();
+    double cos = v0.dot(v1);
+
+    return std::atan2(sin, cos);
 }
 
 static double compute_area(TriMesh const& _mesh, FH _fh)
 {
     auto fh = _mesh.make_smart(_fh);
-    // TODO: compute the face area.
+    // TO.DO: compute the face area.
     // Although OpenMesh has built-in functionality to compute aras, do NOT use it.
-    return 1234;
+
+    auto vertices = std::vector<Vec3d>();
+    for (auto iter = _mesh.cfv_begin(_fh); iter != _mesh.cfv_end(_fh); iter++)
+        vertices.emplace_back(_mesh.point(*iter));
+
+    return (vertices[1] - vertices[0]).cross(vertices[2] - vertices[0]).norm() * 0.5f;
 }
 
 /// Compute cotan of triangle corner that heh points to (i.e. heh.to() in heh.face())
@@ -117,9 +129,11 @@ static double compute_cotan(TriMesh const& _mesh, HEH _heh)
     const Vec3d &p0 = _mesh.point(heh.from());
     const Vec3d &p1 = _mesh.point(heh.to()); // this is the corner whose cotan we want
     const Vec3d &p2 = _mesh.point(heh.next().to());
-    // TODO: compute the cotan of the angle in the face heh.face() at the corner heh.to()
+    // TO.DO: compute the cotan of the angle in the face heh.face() at the corner heh.to()
     // Hint: you do NOT need to compute the angle itself, or
     //       call any trigonometric functions like sin(), cos(), or tan().
+
+    return (p1 - p0).dot(p2 - p0) / (p1 - p0).cross(p2 - p0).norm();
 }
 
 static double compute_cotan_weight(TriMesh const& _mesh, EH _eh)
@@ -138,11 +152,18 @@ static double compute_cotan_weight(TriMesh const& _mesh, EH _eh)
 static Vec3d compute_normal(TriMesh const& _mesh, FH _fh)
 {
     auto fh = _mesh.make_smart(_fh);
-    // TODO: Compute a unit normal vector for face _fh. Its orientation should be
+    // TO.DO: Compute a unit normal vector for face _fh. Its orientation should be
     //       such that it points outwards on meshes where face vertices are
     //       ordered counter-clockwise (all supplied closed meshes follow this convention).
     //       If your mesh gets rendered strangely dark, your normal might be flipped or non-normalized.
-    return Vec3d(0.);
+
+    auto vertices = std::vector<Vec3d>();
+    for (auto iter = _mesh.cfv_begin(_fh); iter != _mesh.cfv_end(_fh); iter++)
+        vertices.emplace_back(_mesh.point(*iter));
+
+    Vec3d dir = (vertices[1] - vertices[0]).cross(vertices[2] - vertices[0]);
+
+    return dir.normalized();
 }
 
 void NormalsAndCurvaturePlugin::initializePlugin()
@@ -275,13 +296,28 @@ computeGaussianCurvature(TriMesh &_mesh)
     double total_angle_defect = 0.;
     for (auto vh: _mesh.vertices()) {
         double angle_sum = 0.;
-    // TODO:
+    // TO.DO:
     //  - compute integrated_gauss_curv[vh]
     //  - compute gaussian_curv[vh]
     //  - add to total_angle_defect
     // Notes:
     //  - You can use compute_angle() defined above
     //  - You can set the curvature to zero at boundary vertices.
+        for (auto iter = _mesh.cvih_begin(vh); iter != _mesh.cvih_end(vh); iter++)
+            angle_sum += compute_angle(_mesh, *iter);
+        double angle_defect = 2 * M_PI - angle_sum;
+        total_angle_defect += angle_defect;
+
+        if(_mesh.is_boundary(vh))
+        {
+            gaussian_curv[vh] = 0.0;
+            integrated_gauss_curv[vh] = 0.0;
+        }
+        else
+        {
+            gaussian_curv[vh] = angle_defect / vertex_area[vh];
+            integrated_gauss_curv[vh] = angle_defect;
+        }
     }
     emit log(LOGINFO, "Total angle defect: 2π * " + QString::number(total_angle_defect/(2*M_PI)));
 
@@ -300,10 +336,13 @@ computeMeanCurvature(TriMesh &_mesh, LaplacianWeights _lap_kind)
         const auto k_norm = mcn.norm();
         if (!vh.is_boundary() && std::isfinite(k_norm))
         {
-            // TODO: compute mean_curv[vh] from mean_curv_normal[vh].
+            // TO.DO: compute mean_curv[vh] from mean_curv_normal[vh].
             //       Make sure to determine the correct sign!
             //       For this purpose, you can access vertex normals using _mesh.normal(vh)
-            mean_curv[vh] = 1234.;
+
+            double H = 0.5 * mcn.norm();
+
+            mean_curv[vh] = (mcn.dot(_mesh.normal(vh)) > 0) ? H : -H;
         } else {
             mean_curv[vh] = 0.;
         }
@@ -365,8 +404,12 @@ computeMinMaxCurvature(TriMesh &_mesh, LaplacianWeights _lap_kind)
         }
         const double H = prop_mean[vh];     // H = .5 * (k_1 + k_2)
         const double K = prop_gaussian[vh]; // K = k_1 * k_2
-    // TODO: compute k_1 and k_2 from H and K,
+    // TO.DO: compute k_1 and k_2 from H and K,
     //       set min_prop[vh] and max_prop[vh] to k_1 and k_2.
+
+        min_prop[vh] = H + sqrt(H * H - K);
+        max_prop[vh] = H - sqrt(H * H - K);
+        
     }
     return std::make_pair(min_prop, max_prop);
 }
