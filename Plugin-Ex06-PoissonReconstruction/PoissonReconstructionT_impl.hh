@@ -3,6 +3,8 @@
 // This file is based on Reconstruction.example.cpp of the reference PoissonRecon
 // implementation, version 18.75
 
+#include "OpenMesh/Core/Geometry/Vector11T.hh"
+#include "OpenMesh/Core/Mesh/Handles.hh"
 #include "PoissonReconstructionT.hh"
 
 #include <OpenMesh/Core/Utils/PropertyManager.hh>
@@ -59,13 +61,18 @@ struct OpenMeshPolygonStream : public PoissonRecon::Reconstructor::OutputFaceStr
         // Read the PoissonRecon readme section on "HEADER-ONLY LIBRARY" which
         // describes the stream interface we'll interface with:
         // https://github.com/mkazhdan/PoissonRecon/blob/cd6dc7d33f028b2e6496f5cd999c25cecd56aff2/README.md
-        return 0;
+        return mesh_.n_faces();
     }
     size_t write(const std::vector< PoissonRecon::node_index_type> &polygon) override
     {
         // TODO: implement this member function
         // cf. https://github.com/mkazhdan/PoissonRecon/blob/cd6dc7d33f028b2e6496f5cd999c25cecd56aff2/Src/Reconstruction.example.cpp#L226
-        return 0;
+
+        std::vector<OpenMesh::VertexHandle> handles(polygon.size());
+        for (size_t i = 0; i < polygon.size(); i++)
+            handles[i] = (OpenMesh::VertexHandle)polygon[i];
+
+        return mesh_.add_face(handles).idx();
     }
 
 protected:
@@ -95,7 +102,10 @@ struct OpenMeshVertexStream : public PoissonRecon::Reconstructor::OutputLevelSet
         // compute and set (mesh_.set_normal(vh, n)) a vertex normal using the supplied gradient,
         // and save the weight value to the weight_ property.
         // cf. https://github.com/mkazhdan/PoissonRecon/blob/cd6dc7d33f028b2e6496f5cd999c25cecd56aff2/Src/Reconstruction.example.cpp#L246
-        return 0;
+        OpenMesh::VertexHandle output = mesh_.add_vertex(OpenMesh::Vec3d(pos[0], pos[1], pos[2]));
+        mesh_.set_normal(output, OpenMesh::Vec3d(grad[0], grad[1], grad[2]));
+        weight_[output] = weight;
+        return output.idx();
     }
 protected:
     MeshT &mesh_;
@@ -116,6 +126,18 @@ struct PackedSampleStream : public PoissonRecon::Reconstructor::InputOrientedSam
     {
         // TODO: implement this member function to pass one entry of the packed data to PoissonRecon
         // cf. https://github.com/mkazhdan/PoissonRecon/blob/cd6dc7d33f028b2e6496f5cd999c25cecd56aff2/Src/Reconstruction.example.cpp#L138
+
+        if (idx_ < data_.size() - 5)
+        {
+            p[0] = data_[idx_++];
+            p[1] = data_[idx_++];
+            p[2] = data_[idx_++];
+            n[0] = data_[idx_++];
+            n[1] = data_[idx_++];
+            n[2] = data_[idx_++];
+
+            return true;
+        }
         return false;
     }
 
